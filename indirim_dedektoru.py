@@ -59,8 +59,51 @@ def fiyat_ekle_ve_analiz_et(urun_adi: str, yeni_fiyat: float):
     print(f"\n[{veriler[urun_anahtari]['gorunen_ad']}] -> {durum_mesaji}\n")
 
 
+def urun_gecmisini_sorgula(urun_adi: str):
+    veriler = verileri_yukle()
+    urun_anahtari = urun_adi.strip().lower()
+
+    if urun_anahtari not in veriler:
+        print("\n[!] Bu ürün için kayıtlı fiyat geçmişi bulunamadı.\n")
+        return
+
+    urun = veriler[urun_anahtari]
+    gecmis = urun["gecmis"]
+    en_dusuk_fiyat = min(kayit["fiyat"] for kayit in gecmis)
+    en_yuksek_fiyat = max(kayit["fiyat"] for kayit in gecmis)
+
+    print(f"\n--- {urun['gorunen_ad']} Fiyat Geçmişi ---")
+    for sira, kayit in enumerate(gecmis, 1):
+        print(f"{sira}. [{kayit['tarih']}] {kayit['fiyat']} TL -> {kayit['analiz']}")
+    print("-------------------------------------------")
+    print(f"Görülen En Düşük Fiyat : {en_dusuk_fiyat} TL")
+    print(f"Görülen En Yüksek Fiyat: {en_yuksek_fiyat} TL\n")
+
+
+def ana_menu():
+    while True:
+        print("=== Sahte İndirim Dedektörü ===")
+        print("1. Yeni Fiyat Ekle ve İndirim Analizi Yap")
+        print("2. Ürün Fiyat Geçmişini ve En Düşük Fiyatı Sorgula")
+        print("3. Çıkış")
+        secim = input("Seçiminiz (1-3): ").strip()
+
+        if secim == "1":
+            ad = input("Ürün adı: ")
+            try:
+                fiyat = float(input("Güncel fiyat (TL): "))
+                fiyat_ekle_ve_analiz_et(ad, fiyat)
+            except ValueError:
+                print("\n[!] Lütfen geçerli bir sayısal fiyat girin.\n")
+        elif secim == "2":
+            ad = input("Sorgulanacak ürün adı: ")
+            urun_gecmisini_sorgula(ad)
+        elif secim == "3":
+            print("Uygulamadan çıkılıyor...")
+            break
+        else:
+            print("\n[!] Geçersiz seçim, lütfen 1-3 arası bir değer girin.\n")
+
+
 if __name__ == "__main__":
-    print("=== Sahte İndirim Dedektörü ===")
-    ad = input("Ürün adı: ")
-    fiyat = float(input("Güncel fiyat (TL): "))
-    fiyat_ekle_ve_analiz_et(ad, fiyat)
+    ana_menu()
